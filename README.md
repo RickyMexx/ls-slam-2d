@@ -1,2 +1,14 @@
-# ls-slam
-Least Squares optimization of a 2D -Range Only- SLAM problem.
+# 2D SLAM using Least Squares
+
+## Introduction
+
+## Usage
+
+## Results
+
+## Credits
+- [Riccardo Caprari](https://github.com/RickyMexx)
+
+
+
+*"La Sapienza" University of Rome - MSc in Artificial Intelligence and Robotics*, Probabilistic Robotics 2020/2021
