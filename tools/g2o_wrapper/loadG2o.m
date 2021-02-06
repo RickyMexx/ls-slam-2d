@@ -43,22 +43,22 @@ function [landmarks, poses, transitions, observations] = loadG2o(filepath)
 	ROBOTLASER1 = 'ROBOTLASER1';
 	EDGE_SE2 = 'EDGE_SE2';
 	EDGE_BEARING_SE2_XY = 'EDGE_BEARING_SE2_XY';
+	EDGE_RANGE_SE2_XY = 'EDGE_RANGE_SE2_XY';
 	EDGE_SE2_XY = 'EDGE_SE2_XY';
 	%%-------------------------
 
 	%open the file
 	fid = fopen(filepath, 'r');
 	
-
 	%debug stuff
 	i_vert_xy = 0;
 	i_vert_se2 = 0;
 	i_robotlaser = 0;
 	i_edge_se2 = 0;
 	i_edge_se2_xy = 0;
-	i_edge_bearing_se2_xy=0;
+	i_edge_bearing_se2_xy = 0;
+	i_edge_range_se2_xy = 0;
   
-	%    
 	curr_id = -1;
 
 	while true
@@ -73,34 +73,45 @@ function [landmarks, poses, transitions, observations] = loadG2o(filepath)
 		%Split the line using space as separator
 		elements = strsplit(c_line,' ');
 
+		
+
 		switch(elements{1})
 			case VERTEX_XY
-        			landmarks(end+1) = extractLandmark(elements);
+        		landmarks(end+1) = extractLandmark(elements);
 				i_vert_xy = i_vert_xy + 1; %do not use pre/post increment. Keep the Matlab compatibility
 			case VERTEX_SE2
-        			poses(end+1) = extractPose(elements);
+        		poses(end+1) = extractPose(elements);
 				i_vert_se2 = i_vert_se2 + 1;
 			case ROBOTLASER1
 			        %TODO
 				i_robotlaser = i_robotlaser + 1;
 			case EDGE_SE2
-			        transitions(end+1) = extractTransition(elements);
+			    transitions(end+1) = extractTransition(elements);
 				i_edge_se2 = i_edge_se2 + 1;
 			case EDGE_BEARING_SE2_XY
 				current_obs = extractBearing(elements);
 				if current_obs.pose_id == curr_id
 					observations(end).observation(end+1) = current_obs.observation;
 				else
-				        observations(end+1) = current_obs;
+				    observations(end+1) = current_obs;
 					curr_id = observations(end).pose_id;
 					i_edge_bearing_se2_xy = i_edge_bearing_se2_xy + 1;
+				end
+			case EDGE_RANGE_SE2_XY
+				current_obs = extractRange(elements);
+				if current_obs.pose_id == curr_id
+					observations(end).observation(end+1) = current_obs.observation;
+				else
+				    observations(end+1) = current_obs;
+					curr_id = observations(end).pose_id;
+					i_edge_range_se2_xy = i_edge_range_se2_xy + 1;
 				end
 			case EDGE_SE2_XY
 				current_obs = extractPoint(elements);				
 				if current_obs.pose_id == curr_id
 					observations(end).observation(end+1) = current_obs.observation;
 				else
-				        observations(end+1) = current_obs;
+				    observations(end+1) = current_obs;
 					curr_id = observations(end).pose_id;
 					i_edge_se2_xy = i_edge_se2_xy + 1;
 				end
@@ -110,10 +121,15 @@ function [landmarks, poses, transitions, observations] = loadG2o(filepath)
 		end
 	end
   
-  printf('[G2oWrapper] loading file...\n#landmarks: %d \n#poses: %d \n',i_vert_xy, i_vert_se2);
-  printf('#transitions: %d \n#observation(bearing-only): %d \n',i_edge_se2, i_edge_bearing_se2_xy);
-  printf('#observation(point): %d \n#laser-scan: %d \n',i_edge_se2_xy, i_robotlaser);  
-  fflush(stdout);
+	% Landmarks undefined warning fix
+	if exist("landmarks", "var") != 1
+		landmarks(1) = 0;
+	end
+
+	printf('[G2oWrapper] loading file...\n#landmarks: %d \n#poses: %d \n',i_vert_xy, i_vert_se2);
+	printf('#transitions: %d \n#observation(bearing-only): %d \n#observation(range-only): %d \n',i_edge_se2, i_edge_bearing_se2_xy, i_edge_range_se2_xy);
+	printf('#observation(point): %d \n#laser-scan: %d \n',i_edge_se2_xy, i_robotlaser);  
+	fflush(stdout);
 
 end
 
@@ -146,6 +162,13 @@ function out = extractBearing(elements)
   land_id = str2double(elements{3});
   bearing = str2double(elements{4});
   out = observation(from_id,land_id, bearing);
+end
+
+function out = extractRange(elements)
+  from_id = str2double(elements{2});
+  land_id = str2double(elements{3});
+  range_val = str2double(elements{4});
+  out = observation(from_id, land_id, range_val);
 end
 
 function out = extractPoint(elements)
