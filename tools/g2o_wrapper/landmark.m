@@ -42,7 +42,8 @@ function out = landmark(varargin)
   if(Nvarargin == 2)
     var2 = varargin{2};
     if(length(var2) == 1)
-      out.bearing = var2; %bearing only
+      out.range = var2; %range only
+      %out.bearing = var2; %bearing only
     end
     if(length(var2) == 2)
     out.x_pose = var2(1); %x-pose
