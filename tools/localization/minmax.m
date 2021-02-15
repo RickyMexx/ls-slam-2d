@@ -1,23 +1,17 @@
-## usage: [LANDMARKS, RESIDUES] = minmax (COMMAND, ARGS)
+## usage: [LM_P] = minmax (POSES_XY, P, R)
 ##
-## Start a subprocess with two-way communication.  COMMAND
-## specifies the name of the command to start.  ARGS is an
-## array of strings containing options for COMMAND.  IN and
-## OUT are the file ids of the input and streams for the
-## subprocess, and PID is the process id of the subprocess,
-## or -1 if COMMAND could not be executed.
+## Computes the position of a landmark given a set
+## of poses. A set of indices p(i) refers to the poses
+## observing the landmark, sensing it at distance r(i).
+## Minmax makes use of squares of side 2r built
+## around the poses to localize the landmark.
+## Further info: https://www.sciencedirect.com/science/article/pii/S1389128603003566
 ##
-## Example:
-##
-##  [in, out, pid] = popen2 ("sort", "-nr");
-##  fputs (in, "these\nare\nsome\nstrings\n");
-##  fclose (in);
-##  while (ischar (s = fgets (out)))
-##    fputs (stdout, s);
-##  endwhile
-##  fclose (out);
+##  poses_xy : Poses of the robot in xy coordinates
+##  p : Indices of the poses referring to current landmark
+##  r : Set of range measurements from p-th pose
 
-function [x, y] = minmax(poses_xy, p, r)
+function [lm_p] = minmax(poses_xy, p, r)
     
     r_num = length(r);
 
@@ -40,8 +34,5 @@ function [x, y] = minmax(poses_xy, p, r)
     p2 = [min(v1_min); min(v2_min)];
 
     lm_p = [mean([p1(1), p2(1)]); mean([p1(2), p2(2)])];
-
-    x = lm_p(1);
-    y = lm_p(2);
 
 end
