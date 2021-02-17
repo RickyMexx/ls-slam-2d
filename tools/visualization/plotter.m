@@ -5,7 +5,7 @@ warning('off', 'all');
 % Plots the map with landmarks IG/OPT/GT
 function plot_map(ig, opt, gt, path, name)
     figure();
-    title("Map");
+    title("World Map");
     hold on;
 
     plot(ig(1,:), ig(2,:),'g*', "linewidth", 2);
