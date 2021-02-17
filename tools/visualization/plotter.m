@@ -57,6 +57,6 @@ function plot_cal_traj(ig, opt, gt, poses_num, tf, path, name);
     plot(reshape(gt(1,3,:), r, c), reshape(gt(2,3,:), r, c), 'k-', 'linewidth', 3);
     legend("Initial guess","LS optimization","Ground truth");
 
-    print(fullfile(path, cstrcat(name, "cal_map_plot.png")));
+    print(fullfile(path, cstrcat(name, "_cal_traj_plot.png")));
 
 end
