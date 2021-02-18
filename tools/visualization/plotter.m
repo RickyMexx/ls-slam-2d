@@ -3,7 +3,7 @@ warning('off', 'all');
 
 
 % Plots the map with landmarks IG/OPT/GT
-function plot_map(ig, opt, gt, path, name)
+function plot_map(ig, opt, gt, path, algo, name)
     figure();
     title("World Map");
     hold on;
@@ -13,13 +13,13 @@ function plot_map(ig, opt, gt, path, name)
     plot(gt(1,:), gt(2,:), 'k*', "linewidth", 2);
     legend("Initial guess","LS optimization","Ground truth");
 
-    print(fullfile(path, cstrcat(name, "_map_plot.png")));
+    print(fullfile(path, cstrcat(name, "_", algo, "_map_plot.png")));
 
 end
 
 
 % Plots the trajectories IG/OPT/GT
-function plot_traj(ig, opt, gt, poses_num, path, name)
+function plot_traj(ig, opt, gt, poses_num, path, algo, name)
     figure();
     hold on;
     title("Robot trajectory");
@@ -32,13 +32,13 @@ function plot_traj(ig, opt, gt, poses_num, path, name)
     plot(reshape(gt(1,3,:), r, c), reshape(gt(2,3,:), r, c), 'k-', 'linewidth', 3);
     legend("Initial guess","LS optimization","Ground truth");
 
-    print(fullfile(path, cstrcat(name, "_traj_plot.png")));
+    print(fullfile(path, cstrcat(name, "_", algo, "_traj_plot.png")));
 
 end
 
 
 % Plots the calibrated trajectories IG/OPT/GT
-function plot_cal_traj(ig, opt, gt, poses_num, tf, path, name);
+function plot_cal_traj(ig, opt, gt, poses_num, tf, path, algo, name);
     % Apply transformation vector
     for i=1:poses_num
         ig(:,:,i) = v2t(tf) * ig(:,:,i);
@@ -57,6 +57,6 @@ function plot_cal_traj(ig, opt, gt, poses_num, tf, path, name);
     plot(reshape(gt(1,3,:), r, c), reshape(gt(2,3,:), r, c), 'k-', 'linewidth', 3);
     legend("Initial guess","LS optimization","Ground truth");
 
-    print(fullfile(path, cstrcat(name, "_cal_traj_plot.png")));
+    print(fullfile(path, cstrcat(name, "_", algo, "_cal_traj_plot.png")));
 
 end
